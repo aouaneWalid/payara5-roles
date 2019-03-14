@@ -1,0 +1,9 @@
+---
+# vars file for payara5
+payara_version: 5.191
+#payara_download_maven: yes
+asadmin_password: admin
+install_folder: /opt
+
+#current full download url
+payara_download_url: "https://s3-eu-west-1.amazonaws.com/payara.fish/Payara+Downloads/{{ payara_version }}/payara-{{ payara_version }}.zip"

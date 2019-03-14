@@ -1,0 +1,13 @@
+---
+# tasks file for payara5
+- name: ensure server is ready (unzip)
+  include: prepare.yml
+
+- name: setup user and service
+  include: user.yml
+
+- name: ensure payara can be started as a service
+  include: service.yml
+
+- name: setup payara
+  include: install.yml

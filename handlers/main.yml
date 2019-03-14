@@ -1,0 +1,7 @@
+---
+# handlers file for payara5
+
+- name: restart payara
+  service:
+    name: payara
+    state: restarted

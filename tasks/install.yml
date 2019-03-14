@@ -1,0 +1,63 @@
+---
+# tasks file for payara
+
+- name: Download latest Payara release to /tmp
+  get_url:
+    url: "{{ payara_download_url }}"
+    dest: /tmp/payara.zip
+    #checksum: "sha256:{{ payara_download_url }}"
+
+
+
+- name: Unzip to {{ install_folder }}
+  unarchive:
+    src: /tmp/payara.zip
+    dest: "{{ install_folder }}"
+    copy: no
+    creates: "{{ install_folder }}/payara5"
+
+- name: Link payara to payara5
+  file:
+    src: "{{ install_folder }}/payara5"
+    dest: "{{ install_folder }}/payara"                
+    state: link
+    owner: payara
+    group: payara
+
+
+- name: ensure password-change.txt
+  template:
+    src: password-change.txt.j2
+    dest: /tmp/password-change.txt
+    owner: payara
+    group: payara
+    mode: 0600
+
+- name: Create password.txt
+  template:
+    src: password.txt.j2 
+    dest: /tmp/password.txt 
+    owner: payara
+    group: payara
+    mode: 0600
+
+- name: Set password for asadmin
+  command: "{{ install_folder }}/payara5/bin/asadmin --user admin --passwordfile /tmp/password-change.txt change-admin-password"
+
+- name: set ownership to payara
+  file:
+    path: "{{ install_folder }}/payara5"
+    recurse: yes
+    owner: payara
+    group: payara
+
+- name: start Payara and add as default service
+  service:
+    name: payara
+    state: started
+    enabled: yes
+
+- name: Enable remote admin
+  command: "{{ install_folder }}/payara/bin/asadmin --user admin --passwordfile /tmp/password.txt enable-secure-admin"
+  notify: restart payara
+
